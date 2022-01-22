@@ -1,2 +1,3 @@
-# the-matron
-Matrix bot
+# The Matron
+
+A Matrix bot
