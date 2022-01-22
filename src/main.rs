@@ -1,3 +1,4 @@
+use std::env;
 use std::convert::TryFrom;
 use matrix_sdk::{
     Client, SyncSettings, Result,
@@ -6,6 +7,9 @@ use matrix_sdk::{
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let username = env::var("USER").unwrap();
+    let password = env::var("PASS").unwrap();
+
     let user = UserId::try_from("@alice:example.org")?;
     let client = Client::new_from_user_id(user.clone()).await?;
 
