@@ -10,4 +10,4 @@ edition = "2018"
 dotenv = "0.15"
 matrix-sdk = { version = "0.4.1", features= ["encryption"] }
 tokio = { version = "1.15.0", features = ["full"] }
-url = { version = "2.2.2"}
+url = "2.2.2"
