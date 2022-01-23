@@ -6,4 +6,4 @@ A Matrix bot
 
 Provide a username and a password to the bot.
 
-`$ USER="matron:matrix.org" PASS="S3CRE7" ./the-matron`
+`$ USER="matron" PASS="S3CRE7" SRV="HTTPS://EXAMPLE.COM" ./the-matron`

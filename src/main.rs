@@ -1,20 +1,24 @@
 use std::env;
-use std::convert::TryFrom;
+use url::{Url};
+
 use matrix_sdk::{
     Client, SyncSettings, Result,
-    ruma::{UserId, events::{SyncMessageEvent, room::message::MessageEventContent}},
+    ruma::{events::{SyncMessageEvent, room::message::MessageEventContent}},
 };
 
 #[tokio::main]
 async fn main() -> Result<()> {
+
     let username = env::var("USER").unwrap();
     let password = env::var("PASS").unwrap();
+    let homeserver = env::var("SRV").unwrap();
 
-    let user = UserId::try_from("@alice:example.org")?;
-    let client = Client::new_from_user_id(user.clone()).await?;
+    let homeserver_url = Url::parse(&homeserver).expect("Couldn't parse the homeserver URL");
+    let client = Client::new(homeserver_url).unwrap();
 
-    // First we need to log in.
-    client.login(user.localpart(), "password", None, None).await?;
+    client.login(&username, &password, None, Some("Bot session")).await?;
+
+    println!("Logged in as {} at {}", username, homeserver);
 
     client
         .register_event_handler(
@@ -24,8 +28,8 @@ async fn main() -> Result<()> {
         )
         .await;
 
-    // Syncing is important to synchronize the client state with the server.
-    // This method will never return.
+    println!("Syncing");
+
     client.sync(SyncSettings::default()).await;
 
     Ok(())

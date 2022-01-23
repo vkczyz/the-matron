@@ -1,7 +1,7 @@
 [package]
 name = "the-matron"
 version = "0.1.0"
-authors = ["mzyzc <mzyzc@czyz.xyz>"]
+authors = ["mzyzc <mzyzc@czyz.xyz>", "Dominik Hagowski <dom@inik.dev>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 matrix-sdk = { version = "0.4.1", features= ["encryption"] }
 tokio = { version = "1.15.0", features = ["full"] }
+url = { version = "2.2.2"}
