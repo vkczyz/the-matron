@@ -6,6 +6,19 @@ use matrix_sdk::{
     ruma::{events::{SyncMessageEvent, room::message::MessageEventContent}},
 };
 
+async fn login(username: String, password: String, homeserver: String) -> Result<matrix_sdk::Client> {
+
+    let homeserver_url = Url::parse(&homeserver).expect("Couldn't parse the homeserver URL");
+
+    let client = Client::new(homeserver_url).unwrap();
+
+    client.login(&username, &password, None, Some("Bot session")).await?;
+
+    println!("Logged in as {} at {}", username, homeserver);
+
+    Ok(client)
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
 
@@ -13,12 +26,7 @@ async fn main() -> Result<()> {
     let password = env::var("PASS").unwrap();
     let homeserver = env::var("SRV").unwrap();
 
-    let homeserver_url = Url::parse(&homeserver).expect("Couldn't parse the homeserver URL");
-    let client = Client::new(homeserver_url).unwrap();
-
-    client.login(&username, &password, None, Some("Bot session")).await?;
-
-    println!("Logged in as {} at {}", username, homeserver);
+    let client = login(username, password, homeserver).await.unwrap();
 
     client
         .register_event_handler(
