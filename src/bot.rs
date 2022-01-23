@@ -1,7 +1,7 @@
 use std::error::Error;
 use url::{Url};
 use matrix_sdk::{
-    Client, SyncSettings,
+    Client, SyncSettings, ClientConfig,
     ruma::{
         events::{
             SyncMessageEvent, 
@@ -18,13 +18,16 @@ pub struct Bot {
 
 impl Bot {
     pub async fn new(username: String, password: String, homeserver: String) -> Result<Self, Box<dyn Error>> {
+        let config = ClientConfig::new().store_path(".");
+
         let bot = Bot {
             username,
             password,
             homeserver,
         };
 
-        let client = bot.login().await.unwrap();
+        let client = bot.login(config).await.unwrap();
+
         client.sync_once(SyncSettings::default()).await?;
         Bot::setup(&client).await;
 
@@ -38,10 +41,10 @@ impl Bot {
         Ok(bot)
     }
 
-    async fn login(&self) -> Result<matrix_sdk::Client, Box<dyn Error>> {
+    async fn login(&self, config: ClientConfig) -> Result<matrix_sdk::Client, Box<dyn Error>> {
         let homeserver_url = Url::parse(&self.homeserver)
             .expect("Couldn't parse the homeserver URL");
-        let client = Client::new(homeserver_url)
+        let client = Client::new_with_config(homeserver_url, config)
             .expect("Couldn't create the client");
 
         client.login(&self.username, &self.password, None, Some("Bot session")).await
