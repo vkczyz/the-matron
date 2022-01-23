@@ -26,12 +26,9 @@ async fn login(username: String, password: String, homeserver: String) -> Result
 }
 
 async fn setup(client: &matrix_sdk::Client) {
-
-    let rooms = client.joined_rooms();
-
-    for room in rooms {
-        let TestMessage = MessageEventContent::text_plain("TEST");
-        room.send(TestMessage, None).await;
+    for room in client.joined_rooms() {
+        let message = MessageEventContent::text_plain("TEST");
+        let _response = room.send(message, None).await;
     }
 }
 
