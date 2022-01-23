@@ -3,7 +3,12 @@ use url::{Url};
 
 use matrix_sdk::{
     Client, SyncSettings, Result,
-    ruma::{events::{SyncMessageEvent, room::message::MessageEventContent}},
+    ruma::{
+        events::{
+            SyncMessageEvent, 
+            room::message::{MessageEventContent},
+        }
+    },
 };
 
 async fn login(username: String, password: String, homeserver: String) -> Result<matrix_sdk::Client> {
@@ -19,6 +24,20 @@ async fn login(username: String, password: String, homeserver: String) -> Result
     Ok(client)
 }
 
+async fn setup(client: &matrix_sdk::Client) {
+
+    let rooms = client.joined_rooms();
+
+    for room in rooms {
+        let TestMessage = MessageEventContent::text_plain("TEST");
+        room.send(TestMessage, None).await;
+    }
+}
+
+async fn on_room_message(event: SyncMessageEvent<MessageEventContent>) {
+    print!("{:?}", event);
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
 
@@ -28,13 +47,11 @@ async fn main() -> Result<()> {
 
     let client = login(username, password, homeserver).await.unwrap();
 
-    client
-        .register_event_handler(
-            |ev: SyncMessageEvent<MessageEventContent>| async move {
-                println!("Received a message {:?}", ev);
-            },
-        )
-        .await;
+    client.sync_once(SyncSettings::default()).await?;
+
+    setup(&client).await;
+
+    client.register_event_handler(|ev : SyncMessageEvent<MessageEventContent>| async move {on_room_message(ev).await;}).await;
 
     println!("Syncing");
 
