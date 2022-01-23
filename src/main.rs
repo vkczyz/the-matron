@@ -13,14 +13,15 @@ use matrix_sdk::{
 
 async fn login(username: String, password: String, homeserver: String) -> Result<matrix_sdk::Client> {
 
-    let homeserver_url = Url::parse(&homeserver).expect("Couldn't parse the homeserver URL");
+    let homeserver_url = Url::parse(&homeserver)
+        .expect("Couldn't parse the homeserver URL");
+    let client = Client::new(homeserver_url)
+        .expect("Couldn't create the client");
 
-    let client = Client::new(homeserver_url).unwrap();
-
-    client.login(&username, &password, None, Some("Bot session")).await?;
+    client.login(&username, &password, None, Some("Bot session")).await
+        .expect("Couldn't log in");
 
     println!("Logged in as {} at {}", username, homeserver);
-
     Ok(client)
 }
 
